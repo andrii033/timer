@@ -4,10 +4,12 @@
 #include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
-        QWidget(parent), isTimerRunning(false), remainingTime(5) {
+        QWidget(parent), isTimerRunning(false), remainingTime(65) {
     vbox = new QVBoxLayout();
     btn = new QPushButton("Start");
-    lbl = new QLabel(QString::number(remainingTime));
+    lbl = new QLabel(QString::number(0));
+    timeEdit=new QTimeEdit();
+    timeEdit->setDisplayFormat("hh:mm:ss");
     dialog = new QDialog(nullptr,
                          Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 
@@ -16,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     timer->setInterval(1000);
     //timer->start();
 
+    vbox->addWidget(timeEdit);
     vbox->addWidget(lbl);
     vbox->addWidget(btn);
     setLayout(vbox);
@@ -30,6 +33,12 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 MainWindow::~MainWindow() {
+    delete vbox;
+    delete btn;
+    delete lbl;
+    delete dialog;
+    delete timer;
+    delete timeEdit;
 }
 
 void MainWindow::toggleTimer() {
@@ -39,6 +48,9 @@ void MainWindow::toggleTimer() {
         btn->setText("Start");
     } else {
         qDebug() << "timer start";
+        QTime selectedTime = timeEdit->time();
+        remainingTime = QTime(0, 0).secsTo(selectedTime);
+        qDebug()<<remainingTime;
         timer->start();
         btn->setText("Stop");
     }
@@ -47,12 +59,15 @@ void MainWindow::toggleTimer() {
 
 void MainWindow::timerSlot() {
     remainingTime--;
+    if (remainingTime<0)
+        remainingTime=0;
     if (remainingTime < 60) {
         lbl->setText(QString::number(remainingTime) + " sec");
     } else if (remainingTime < 3600) {
         lbl->setText(QString::number(remainingTime / 60) + " min " + QString::number(remainingTime % 60) + " sec");
     } else {
-        lbl->setText(QString::number(remainingTime / 3600) + " hour " + QString::number(remainingTime / 60) + " min " +
+        lbl->setText(QString::number(remainingTime / 3600) + " hour " +
+                     QString::number((remainingTime % 3600) / 60) + " min " +
                      QString::number(remainingTime % 60) + " sec");
     }
 
