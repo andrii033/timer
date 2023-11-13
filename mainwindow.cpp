@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Create the timer and set its interval before starting it
     timer = new QTimer(this);
-    timer->setInterval(remainingTime);
+    timer->setInterval(1000);
     //timer->start();
 
     vbox->addWidget(lbl);
