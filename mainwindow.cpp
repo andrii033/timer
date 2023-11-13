@@ -4,10 +4,12 @@
 #include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
-        QWidget(parent), isTimerRunning(false),remainingTime(5) {
+        QWidget(parent), isTimerRunning(false), remainingTime(5) {
     vbox = new QVBoxLayout();
     btn = new QPushButton("Start");
     lbl = new QLabel(QString::number(remainingTime));
+    dialog = new QDialog(nullptr,
+                         Qt::Dialog | Qt::WindowTitleHint | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 
     // Create the timer and set its interval before starting it
     timer = new QTimer(this);
@@ -17,6 +19,11 @@ MainWindow::MainWindow(QWidget *parent) :
     vbox->addWidget(lbl);
     vbox->addWidget(btn);
     setLayout(vbox);
+
+    // Dialog setup
+    QLabel *dialogLabel = new QLabel("Time's up! ", dialog);
+    QVBoxLayout *dialogLayout = new QVBoxLayout(dialog);
+    dialogLayout->addWidget(dialogLabel);
 
     connect(timer, &QTimer::timeout, this, &MainWindow::timerSlot);
     connect(btn, &QPushButton::clicked, this, &MainWindow::toggleTimer);
@@ -40,13 +47,21 @@ void MainWindow::toggleTimer() {
 
 void MainWindow::timerSlot() {
     remainingTime--;
-    lbl->setText(QString::number(remainingTime));
+    if (remainingTime < 60) {
+        lbl->setText(QString::number(remainingTime) + " sec");
+    } else if (remainingTime < 3600) {
+        lbl->setText(QString::number(remainingTime / 60) + " min " + QString::number(remainingTime % 60) + " sec");
+    } else {
+        lbl->setText(QString::number(remainingTime / 3600) + " hour " + QString::number(remainingTime / 60) + " min " +
+                     QString::number(remainingTime % 60) + " sec");
+    }
+
 
     if (remainingTime <= 0) {
         // Timer has reached 0, stop the timer
         timer->stop();
         isTimerRunning = false;
         btn->setText("Start");
-        qDebug()<<"time out";
+        dialog->show();
     }
 }

@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QTimer>
 #include <QDebug>
+#include <QDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -29,6 +30,7 @@ private:
     QLabel *lbl;
     QVBoxLayout *vbox;
     QTimer *timer;
+    QDialog *dialog;
     bool isTimerRunning;
     int remainingTime;
 
