@@ -30,6 +30,7 @@ private:
     QVBoxLayout *vbox;
     QTimer *timer;
     bool isTimerRunning;
+    int remainingTime;
 
 private slots:
     void toggleTimer();

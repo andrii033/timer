@@ -4,16 +4,15 @@
 #include <QApplication>
 
 MainWindow::MainWindow(QWidget *parent) :
-        QWidget(parent), isTimerRunning(false) {
-    qDebug() << "constructor";
+        QWidget(parent), isTimerRunning(false),remainingTime(5) {
     vbox = new QVBoxLayout();
     btn = new QPushButton("Start");
-    lbl = new QLabel("timer");
+    lbl = new QLabel(QString::number(remainingTime));
 
     // Create the timer and set its interval before starting it
     timer = new QTimer(this);
-    timer->setInterval(1000);
-    timer->start();
+    timer->setInterval(remainingTime);
+    //timer->start();
 
     vbox->addWidget(lbl);
     vbox->addWidget(btn);
@@ -33,7 +32,6 @@ void MainWindow::toggleTimer() {
         btn->setText("Start");
     } else {
         qDebug() << "timer start";
-        timer->setInterval(1000);
         timer->start();
         btn->setText("Stop");
     }
@@ -41,6 +39,14 @@ void MainWindow::toggleTimer() {
 }
 
 void MainWindow::timerSlot() {
-    qDebug() << "time out";
-    timer->stop();
+    remainingTime--;
+    lbl->setText(QString::number(remainingTime));
+
+    if (remainingTime <= 0) {
+        // Timer has reached 0, stop the timer
+        timer->stop();
+        isTimerRunning = false;
+        btn->setText("Start");
+        qDebug()<<"time out";
+    }
 }
